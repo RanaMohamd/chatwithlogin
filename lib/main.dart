@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:petshelt/info_shelters_screens/info_ui.dart';
@@ -8,15 +7,13 @@ import 'package:petshelt/splash_screen.dart';
 import 'info_shelters_screens/shelters_ui.dart';
 import 'package:petshelt/Chats.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

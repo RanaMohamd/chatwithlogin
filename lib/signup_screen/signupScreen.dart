@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:petshelt/Chats.dart';
 import 'package:petshelt/info_shelters_screens/info_ui.dart';
 import 'utils_format.dart';
 
@@ -222,7 +223,7 @@ class signupText extends StatelessWidget {
           TextSpan(text: 'i', style: TextStyle(color: Color(0xFF81D9C4))),
           TextSpan(text: 'g', style: TextStyle(color: Color(0xFFFF9436))),
           TextSpan(text: 'n', style: TextStyle(color: Color(0xFF0DFFFF))),
-          TextSpan(text: ' U', style: TextStyle(color: Color(0xFFA591D9))),
+          TextSpan(text: 'U', style: TextStyle(color: Color(0xFFA591D9))),
           TextSpan(text: 'p', style: TextStyle(color: Color(0xFF6EC9B1)))
         ]));
   }
@@ -238,7 +239,7 @@ class test_button extends StatelessWidget {
       icon: Icon(Icons.login),
       color: Colors.black,
       onPressed: () {
-        Navigator.pushNamed(context, infoScreen.routeName);
+        Navigator.pushNamed(context, Chats.routeName);
       },
     );
   }

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
-
 import 'login_screen/loginScreen.dart';
 
 class splashScreen extends StatefulWidget {
   static const String routeName = "splashScreen";
-
-  const splashScreen({Key? key}) : super(key: key);
 
   @override
   State<splashScreen> createState() => _splashScreenState();

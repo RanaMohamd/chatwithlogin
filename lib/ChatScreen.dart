@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:petshelt/MessageModel.dart';
 import 'package:petshelt/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-User? loggedInUser;
+final _firestore = FirebaseFirestore.instance;
+User? loggedInUser; //this will give us the email
+
 
 class ChatScreen extends StatefulWidget {
   final Userr user;
@@ -14,112 +15,24 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _firestore = FirebaseFirestore.instance;
+  final messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  String? messageText;
-  _chatBubble(Message message, bool isMe, bool isSameUser){
-    if (isMe) {
-      return Column(
-        children: <Widget>[
-          Container(// container in container to make the words small
-            alignment: Alignment.topRight,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width *0.90,
-              ),
-              padding: EdgeInsets.all(15),
-              margin: EdgeInsets.symmetric(vertical: 15),
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(118, 189, 178, 1),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(17),
-                  topRight: Radius.circular(17),
-                  bottomLeft: Radius.circular(17),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.7),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                  ),
-                ],
-              ),
-              child: Text(
-                message.text,
-                style: TextStyle(
-                  fontFamily: "Inter",
-                ),
-              ),
-            ),
-          ),
-          !isSameUser
-              ?
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Text(
-                message.time,
-                style: TextStyle(
-                    fontFamily: "Inter",
-                    fontSize: 10,
-                ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-            ],
-          )
-          :
-          Container(
-                child: null,
-              ),
-        ],
-      );
-    } else{
-      return Column(
-        children: <Widget>[
-          Container(// container in container to make the words small
-            alignment: Alignment.topLeft,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width *0.90,
-              ),
-              padding: EdgeInsets.all(15),
-              margin: EdgeInsets.symmetric(vertical: 15),
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(237, 237, 237, 5),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(17),
-                  topRight: Radius.circular(17),
-                  bottomRight: Radius.circular(17),
-                ),
-                boxShadow: [//read
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.7),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                  ),
-                ],
-              ),
-              child: Text(message.text,
-                style: TextStyle(
-                  fontFamily: "Inter",
-                ),),
-            ),
-          ),
-          !isSameUser?
-          Row(
-            children: [
-              Text(message.time,style: TextStyle(
-                  fontFamily: "Inter",
-                  fontSize: 10),)],
-          )
-              :
-              Container(
-                child: null,
-              )
-        ],
-      );
+  String? messageText; //this will give us the message
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      final user = await _auth.currentUser!;
+      if (user != null) {
+        loggedInUser = user;
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -144,16 +57,22 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Expanded(
             child: TextField(
+              controller: messageTextController,
               onChanged: (value){
                 messageText = value;
               },
+              decoration: InputDecoration(
+                hintText: 'Enter your message...',
+              ),
             ),
           ),
           TextButton(
             onPressed: (){
+              messageTextController.clear();
               _firestore.collection('messages').add({
                 'text':messageText,
                 'sender':loggedInUser!.email,
+                'time': FieldValue.serverTimestamp(),
               }
               );
             },
@@ -171,26 +90,9 @@ class _ChatScreenState extends State<ChatScreen> {
        ),
     );
   }
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUser();
-  }
-
-  void getCurrentUser() async {
-    try {
-      final user = await _auth.currentUser!;
-      if (user != null) {
-        loggedInUser = user;
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    int? prevUserId;
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
       appBar: AppBar(
@@ -217,26 +119,99 @@ class _ChatScreenState extends State<ChatScreen> {
           },
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              padding: EdgeInsets.all(15),
-              itemCount: messages.length,
-              itemBuilder: (BuildContext context, int index ){
-                final Message message = messages[index];
-                final bool isMe = message.sender.id == currentUser.id;
-                final bool isSameUser = prevUserId == message.sender.id;
-                prevUserId = message.sender.id;
-                return _chatBubble(message, isMe, isSameUser);
-              },
-            )
-          ),
-           _sendMessageArea(),
-
-        ],
-      )
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            MessageStreamBuilder(),
+            _sendMessageArea(),
+          ],
+        ),
+    )
     );
+  }
+}
+
+class MessageStreamBuilder extends StatelessWidget {
+  const MessageStreamBuilder({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore.collection('messages').orderBy('time').snapshots(),
+      builder: (context, snapshot){
+        List<MessageLine > messageWidgets=[];
+
+        if (!snapshot.hasData){
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.black,
+            ),
+          );
+        }
+        final messages = snapshot.data!.docs.reversed;
+        for(var message in messages){
+          final messageText = message.get('text');
+          final messageSender = message.get('sender');
+          final currentUser = loggedInUser!.email;
+
+          final messageWidget = MessageLine(
+            sender: messageSender,
+            text: messageText,
+            isMe: currentUser == messageSender,
+          );
+          messageWidgets.add(messageWidget);
+        }
+        return Expanded(
+          child: ListView(
+            reverse: true,
+            padding: EdgeInsets.symmetric(horizontal: 15,vertical: 15),
+            children: messageWidgets,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class MessageLine extends StatelessWidget {
+  const MessageLine({this.sender,this.text,required this.isMe});
+
+  final String? sender;
+  final String? text;
+  final bool isMe;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Material(
+            elevation: 4,
+            borderRadius: isMe ? BorderRadius.only(
+              topRight: Radius.circular(15),
+              topLeft: Radius.circular(15),
+              bottomLeft: Radius.circular(15),
+            ) :  BorderRadius.only(
+                topRight: Radius.circular(15),
+                topLeft: Radius.circular(15),
+                bottomRight: Radius.circular(15),
+            ),
+            color: isMe ? Color.fromRGBO(118, 189, 178, 1) : Color.fromRGBO(237, 237, 237, 5),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+              child: Text('$text',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'inter',
+                ),),
+            ),
+          ),
+        ],
+      ),
+    )  ;
   }
 }
