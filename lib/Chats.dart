@@ -2,8 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:petshelt/MessageModel.dart';
 import 'package:petshelt/ChatScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 
 class Chats extends StatefulWidget {
   static const String routeName = 'Chats';
