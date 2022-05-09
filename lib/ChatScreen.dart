@@ -134,7 +134,6 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class MessageStreamBuilder extends StatelessWidget {
-  const MessageStreamBuilder({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
