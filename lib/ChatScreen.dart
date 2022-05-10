@@ -15,7 +15,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final messageTextController = TextEditingController();
+  final messageTextController = TextEditingController(); //clear textField
   final _auth = FirebaseAuth.instance;
   String? messageText; //this will give us the message
 
@@ -134,7 +134,6 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class MessageStreamBuilder extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -149,7 +148,7 @@ class MessageStreamBuilder extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data!.docs.reversed;
+        final messages = snapshot.data!.docs.reversed; // make the message appears at bottom of list .. reverse order
         for(var message in messages){
           final messageText = message.get('text');
           final messageSender = message.get('sender');
@@ -164,7 +163,7 @@ class MessageStreamBuilder extends StatelessWidget {
         }
         return Expanded(
           child: ListView(
-            reverse: true,
+            reverse: true, // bottom of the listview showing
             padding: EdgeInsets.symmetric(horizontal: 15,vertical: 15),
             children: messageWidgets,
           ),

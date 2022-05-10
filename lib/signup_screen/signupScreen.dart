@@ -200,7 +200,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           .createUserWithEmailAndPassword(email: email, password: password);
       hideLoading(context);
       if (result.user != null) {
-        showMessage('User registered Successful', context);
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Chats()),
+        );
       }
     } catch (error) {
       hideLoading(context);
@@ -229,18 +232,3 @@ class signupText extends StatelessWidget {
   }
 }
 
-class test_button extends StatelessWidget {
-  //will be removed
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      iconSize: 15,
-      icon: Icon(Icons.login),
-      color: Colors.black,
-      onPressed: () {
-        Navigator.pushNamed(context, Chats.routeName);
-      },
-    );
-  }
-}
