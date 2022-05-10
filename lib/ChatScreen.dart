@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:petshelt/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final _firestore = FirebaseFirestore.instance;
 User? loggedInUser; //this will give us the email
+final ImagePicker _picker = ImagePicker();
 
 
 class ChatScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final messageTextController = TextEditingController(); //clear textField
   final _auth = FirebaseAuth.instance;
   String? messageText; //this will give us the message
+
 
   @override
   void initState() {
@@ -44,17 +47,17 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Row(
         children: <Widget>[
           IconButton(
-              icon: Icon(Icons.attach_file),
+              icon: Icon(Icons.add_a_photo),
               iconSize: 30,
               color: Colors.black54,
-              onPressed: (){},
+              onPressed: (){
+                showModalBottomSheet(
+                  context: context,
+                  builder: ((builder) => bottomSheet()),
+                );
+              },
           ),
-          IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.keyboard_voice),
-              iconSize: 30,
-              color: Colors.black54,
-          ),
+
           Expanded(
             child: TextField(
               controller: messageTextController,
@@ -174,6 +177,7 @@ class MessageStreamBuilder extends StatelessWidget {
 }
 
 class MessageLine extends StatelessWidget {
+
   const MessageLine({this.sender,this.text,required this.isMe});
 
   final String? sender;
@@ -213,3 +217,60 @@ class MessageLine extends StatelessWidget {
     )  ;
   }
 }
+
+Widget bottomSheet() {
+  return Container(
+    height: 80,
+    margin: EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 10,
+    ),
+    child: Column(
+      children: <Widget>[
+        SizedBox(
+          height: 20,
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+          TextButton.icon(
+            icon: Icon(Icons.camera_alt,
+            color: Colors.black54,
+            size: 35
+            ),
+            onPressed: () {
+              takePhoto(ImageSource.camera);
+            },
+            label: Text("Camera",
+              style: TextStyle(
+                  fontSize: 17,
+                  fontFamily: 'inter',
+                  color: Colors.black54),),
+          ),
+          TextButton.icon(
+            icon: Icon(Icons.image,
+            color: Colors.black54,
+            size: 35),
+            onPressed: () {
+              takePhoto(ImageSource.gallery);
+            },
+            label: Text("Gallery",
+              style: TextStyle(
+                  fontSize: 17,
+                  fontFamily: 'inter',
+                  color: Colors.black54),
+
+            ),
+          ),
+        ])
+      ],
+    ),
+  );
+}
+void takePhoto(ImageSource source) async {
+  final pickedFile = await _picker.pickImage(
+    source: source,
+  );
+
+}
+
+
