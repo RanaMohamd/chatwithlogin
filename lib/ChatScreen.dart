@@ -220,16 +220,14 @@ class MessageLine extends StatelessWidget {
 
 Widget bottomSheet() {
   return Container(
-    height: 80,
+    height: 55,
     margin: EdgeInsets.symmetric(
-      horizontal: 20,
-      vertical: 10,
+      horizontal: 5,
+      vertical: 15,
     ),
     child: Column(
       children: <Widget>[
-        SizedBox(
-          height: 20,
-        ),
+
         Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
           TextButton.icon(
@@ -261,7 +259,8 @@ Widget bottomSheet() {
 
             ),
           ),
-        ])
+        ]
+        )
       ],
     ),
   );
