@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:petshelt/ChatScreen.dart';
+import 'package:petshelt/HomeScreen.dart';
 import 'package:petshelt/data/firestore_utlis.dart';
 import 'package:petshelt/provider/authenticationProvider.dart';
 import 'package:petshelt/signup_screen/signupScreen.dart';
@@ -194,7 +195,7 @@ class _loginScreenState extends State<loginScreen> {
         var fireStoreUser = await getUserById(result.user!.uid);
         if (fireStoreUser != null) {
           provider.updateUser(fireStoreUser);
-          Navigator.pushReplacementNamed(context, ChatScreen.routeName);
+          Navigator.pushReplacementNamed(context, homeScreen.routeName);
         }
       }
     } catch (error) {

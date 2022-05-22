@@ -231,33 +231,37 @@ Widget bottomSheet() {
       children: <Widget>[
         Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              TextButton.icon(
-                icon: Icon(Icons.camera_alt,
-                    color: Colors.black54,
-                    size: 35
+              Expanded(
+                child: TextButton.icon(
+                  icon: Icon(Icons.camera_alt,
+                      color: Colors.black54,
+                      size: 35
+                  ),
+                  onPressed: () {
+                    takePhoto(ImageSource.camera);
+                  },
+                  label: Text("Camera",
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontFamily: 'inter',
+                        color: Colors.black54),),
                 ),
-                onPressed: () {
-                  takePhoto(ImageSource.camera);
-                },
-                label: Text("Camera",
-                  style: TextStyle(
-                      fontSize: 17,
-                      fontFamily: 'inter',
-                      color: Colors.black54),),
               ),
-              TextButton.icon(
-                icon: Icon(Icons.image,
-                    color: Colors.black54,
-                    size: 35),
-                onPressed: () {
-                  takePhoto(ImageSource.gallery);
-                },
-                label: Text("Gallery",
-                  style: TextStyle(
-                      fontSize: 17,
-                      fontFamily: 'inter',
-                      color: Colors.black54),
+              Expanded(
+                child: TextButton.icon(
+                  icon: Icon(Icons.image,
+                      color: Colors.black54,
+                      size: 35),
+                  onPressed: () {
+                    takePhoto(ImageSource.gallery);
+                  },
+                  label: Text("Gallery",
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontFamily: 'inter',
+                        color: Colors.black54),
 
+                  ),
                 ),
               ),
             ]
