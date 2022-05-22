@@ -1,7 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:petshelt/Chats.dart';
+import 'package:petshelt/ChatScreen.dart';
+import 'package:petshelt/data/User.dart' as AppUser;
+import 'package:petshelt/data/firestore_utlis.dart';
 import 'package:petshelt/info_shelters_screens/info_ui.dart';
+import 'package:petshelt/provider/authenticationProvider.dart';
+import 'package:provider/provider.dart';
+
 import 'utils_format.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -19,9 +24,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       confirmPassword = '';
 
   var formKey = GlobalKey<FormState>();
+  late AuthProvider provider;
 
   @override
   Widget build(BuildContext context) {
+    provider = Provider.of<AuthProvider>(context);
     return Scaffold(
         appBar: AppBar(
             title: signupText(),
@@ -41,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           labelText: 'Email',
                           enabledBorder: OutlineInputBorder(
                             borderSide:
-                                BorderSide(width: .2, color: Colors.black),
+                            BorderSide(width: .2, color: Colors.black),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -68,7 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labelText: 'Name',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                              BorderSide(width: .2, color: Colors.black),
+                          BorderSide(width: .2, color: Colors.black),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -93,7 +100,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labelText: 'phone Number',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                              BorderSide(width: .2, color: Colors.black),
+                          BorderSide(width: .2, color: Colors.black),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -122,7 +129,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labelText: 'Password',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                              BorderSide(width: .2, color: Colors.black),
+                          BorderSide(width: .2, color: Colors.black),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -151,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         labelText: 'Confirm Password',
                         enabledBorder: OutlineInputBorder(
                           borderSide:
-                              BorderSide(width: .2, color: Colors.black),
+                          BorderSide(width: .2, color: Colors.black),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -200,10 +207,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           .createUserWithEmailAndPassword(email: email, password: password);
       hideLoading(context);
       if (result.user != null) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Chats()),
-        );
+        var MyUser = AppUser.User(
+            id: result.user!.uid,
+            name: name,
+            phoneNumber: phoneNumber,
+            email: email);
+        addUserToFireStore(MyUser).then((value) {
+          //showMessage('User registered Successful', context);
+          provider.updateUser(MyUser);
+          Navigator.pushReplacementNamed(context, ChatScreen.routeName);
+        }).onError((error, stackTrace) {
+          showMessage(error.toString(), context);
+        });
       }
     } catch (error) {
       hideLoading(context);
@@ -226,9 +241,24 @@ class signupText extends StatelessWidget {
           TextSpan(text: 'i', style: TextStyle(color: Color(0xFF81D9C4))),
           TextSpan(text: 'g', style: TextStyle(color: Color(0xFFFF9436))),
           TextSpan(text: 'n', style: TextStyle(color: Color(0xFF0DFFFF))),
-          TextSpan(text: 'U', style: TextStyle(color: Color(0xFFA591D9))),
+          TextSpan(text: ' U', style: TextStyle(color: Color(0xFFA591D9))),
           TextSpan(text: 'p', style: TextStyle(color: Color(0xFF6EC9B1)))
         ]));
   }
 }
 
+class test_button extends StatelessWidget {
+  //will be removed
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      iconSize: 15,
+      icon: Icon(Icons.login),
+      color: Colors.black,
+      onPressed: () {
+        Navigator.pushNamed(context, infoScreen.routeName);
+      },
+    );
+  }
+}

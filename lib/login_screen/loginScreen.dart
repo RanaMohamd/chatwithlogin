@@ -3,11 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:petshelt/Chats.dart';
-import 'package:petshelt/signup_screen/signupScreen.dart';
-import '../signup_screen/utils_format.dart';
 import 'package:petshelt/ChatScreen.dart';
-
+import 'package:petshelt/data/firestore_utlis.dart';
+import 'package:petshelt/provider/authenticationProvider.dart';
+import 'package:petshelt/signup_screen/signupScreen.dart';
+import 'package:provider/provider.dart';
+import '../signup_screen/utils_format.dart';
 
 class loginScreen extends StatefulWidget {
   static const String routeName = "loginScreen";
@@ -17,13 +18,14 @@ class loginScreen extends StatefulWidget {
 }
 
 class _loginScreenState extends State<loginScreen> {
-  final _auth = FirebaseAuth.instance;
   String email = '', password = '';
 
   var formKey = GlobalKey<FormState>();
+  late AuthProvider provider;
 
   @override
   Widget build(BuildContext context) {
+    provider = Provider.of<AuthProvider>(context);
     return Scaffold(
         appBar: AppBar(
           title: loginText(),
@@ -45,7 +47,7 @@ class _loginScreenState extends State<loginScreen> {
                             labelText: 'Email',
                             enabledBorder: OutlineInputBorder(
                               borderSide:
-                                  BorderSide(width: .2, color: Colors.black),
+                              BorderSide(width: .2, color: Colors.black),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
@@ -73,7 +75,7 @@ class _loginScreenState extends State<loginScreen> {
                           labelText: 'Password',
                           enabledBorder: OutlineInputBorder(
                             borderSide:
-                                BorderSide(width: .2, color: Colors.black),
+                            BorderSide(width: .2, color: Colors.black),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -184,30 +186,20 @@ class _loginScreenState extends State<loginScreen> {
   void LoginWithFirebase() async {
     try {
       showLoading(context);
-      var result = await _auth
+      var result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       hideLoading(context);
       if (result.user != null) {
-        getCurrentUser();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Chats()),
-        );
+        //showMessage('User logged in Successful', context);
+        var fireStoreUser = await getUserById(result.user!.uid);
+        if (fireStoreUser != null) {
+          provider.updateUser(fireStoreUser);
+          Navigator.pushReplacementNamed(context, ChatScreen.routeName);
+        }
       }
     } catch (error) {
       hideLoading(context);
       showMessage(error.toString(), context);
-
-    }
-  }
-  void getCurrentUser() async {
-    try {
-      final user = await _auth.currentUser;
-      if (user != null) {
-        loggedInUser = user;
-      }
-    } catch (e) {
-      print(e);
     }
   }
 
@@ -271,9 +263,7 @@ class loginText extends StatelessWidget {
           TextSpan(text: 'g', style: TextStyle(color: Color(0xFF6EC9B1))),
           TextSpan(text: 'i', style: TextStyle(color: Color(0xFFF5E482))),
           TextSpan(text: 'n', style: TextStyle(color: Color(0xFF0DFFFF))),
-        ]
-        )
-    );
+        ]));
   }
 }
 

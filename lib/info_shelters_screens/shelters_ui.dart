@@ -135,7 +135,7 @@ class Evac extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         TextSpan(
                             text:
-                                'Autostrad road, Behind Police Academy, \nTora- Cairo'),
+                                'Autostrad road, Behind Police \nAcademy,Tora- Cairo'),
                       ]))
                 ],
               ),
@@ -233,7 +233,7 @@ class Esma extends StatelessWidget {
                             text: 'Location: ',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         TextSpan(
-                            text: 'Al Mansoureya Rd, Nazlet Al Ashtar, Giza'),
+                            text: 'Al Mansoureya Rd, Nazlet Al Ashtar, \nGiza'),
                       ]))
                 ],
               ),
@@ -428,7 +428,8 @@ class Cart extends StatelessWidget {
                             text: 'Location: ',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         TextSpan(
-                            text: 'CART Dog Shelter Abu Sir,Al Badrashin,Giza'),
+                            text:
+                                'CART Dog Shelter Abu Sir,Al Badrashin,\nGiza'),
                       ]))
                 ],
               ),

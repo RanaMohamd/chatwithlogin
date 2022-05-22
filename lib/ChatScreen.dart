@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:petshelt/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -10,8 +9,7 @@ final ImagePicker _picker = ImagePicker();
 
 
 class ChatScreen extends StatefulWidget {
-  final Userr user;
-  ChatScreen({required this.user});
+  static const String routeName = "ChatScreen";
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -47,15 +45,15 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Row(
         children: <Widget>[
           IconButton(
-              icon: Icon(Icons.add_a_photo),
-              iconSize: 30,
-              color: Colors.black54,
-              onPressed: (){
-                showModalBottomSheet(
-                  context: context,
-                  builder: ((builder) => bottomSheet()),
-                );
-              },
+            icon: Icon(Icons.add_a_photo),
+            iconSize: 30,
+            color: Colors.black54,
+            onPressed: (){
+              showModalBottomSheet(
+                context: context,
+                builder: ((builder) => bottomSheet()),
+              );
+            },
           ),
 
           Expanded(
@@ -82,56 +80,56 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Text(
               'Send',
               style: TextStyle(
-              color: Colors.black54,
-              fontFamily: "Inter",
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+                color: Colors.black54,
+                fontFamily: "Inter",
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
-          ),
           )
         ],
-       ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: const Color.fromRGBO(118, 189, 178, 1),
-        title: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(text: widget.user.name,
-                  style: TextStyle(fontSize: 25,
+        backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: const Color.fromRGBO(118, 189, 178, 1),
+          title: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(text: "Chat",
+                    style: TextStyle(fontSize: 25,
                       fontFamily: "Inter",
-                  )
-              ),
+                    )
+                ),
+              ],
+            ),
+          ),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            ),
+            onPressed: () { // to get back to previous screen
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              MessageStreamBuilder(),
+              _sendMessageArea(),
             ],
           ),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.white,
-          ),
-          onPressed: () { // to get back to previous screen
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            MessageStreamBuilder(),
-            _sendMessageArea(),
-          ],
-        ),
-    )
+        )
     );
   }
 }
@@ -142,9 +140,7 @@ class MessageStreamBuilder extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore.collection('messages').orderBy('time').snapshots(),
       builder: (context, snapshot){
-        List<MessageLine > messageWidgets=[];
-
-        if (!snapshot.hasData){
+        if (!snapshot.hasData){//has no data
           return Center(
             child: CircularProgressIndicator(
               backgroundColor: Colors.black,
@@ -152,12 +148,13 @@ class MessageStreamBuilder extends StatelessWidget {
           );
         }
         final messages = snapshot.data!.docs.reversed; // make the message appears at bottom of list .. reverse order
+        List<MessageBubble > messageWidgets=[];
         for(var message in messages){
           final messageText = message.get('text');
           final messageSender = message.get('sender');
-          final currentUser = loggedInUser!.email;
+          final currentUser = loggedInUser?.email;
 
-          final messageWidget = MessageLine(
+          final messageWidget = MessageBubble(
             sender: messageSender,
             text: messageText,
             isMe: currentUser == messageSender,
@@ -176,10 +173,8 @@ class MessageStreamBuilder extends StatelessWidget {
   }
 }
 
-class MessageLine extends StatelessWidget {
-
-  const MessageLine({this.sender,this.text,required this.isMe});
-
+class MessageBubble extends StatelessWidget {
+  const MessageBubble({this.sender,this.text,required this.isMe});
   final String? sender;
   final String? text;
   final bool isMe;
@@ -191,23 +186,30 @@ class MessageLine extends StatelessWidget {
       child: Column(
         crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
+          Text(sender!,
+          style: TextStyle(
+            fontSize:12,
+            color: Colors.black54,
+            fontFamily: 'Inter',
+          ),),
           Material(
             elevation: 4,
             borderRadius: isMe ? BorderRadius.only(
-              topRight: Radius.circular(15),
-              topLeft: Radius.circular(15),
-              bottomLeft: Radius.circular(15),
+              topRight: Radius.circular(5),
+              topLeft: Radius.circular(5),
+              bottomLeft: Radius.circular(5),
             ) :  BorderRadius.only(
-                topRight: Radius.circular(15),
-                topLeft: Radius.circular(15),
-                bottomRight: Radius.circular(15),
+              topRight: Radius.circular(5),
+              topLeft: Radius.circular(5),
+              bottomRight: Radius.circular(5),
             ),
             color: isMe ? Color.fromRGBO(118, 189, 178, 1) : Color.fromRGBO(237, 237, 237, 5),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-              child: Text('$text',
+              child: Text(text!,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 20,
+                  color: Colors.black,
                   fontFamily: 'inter',
                 ),),
             ),
@@ -227,39 +229,38 @@ Widget bottomSheet() {
     ),
     child: Column(
       children: <Widget>[
-
         Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-          TextButton.icon(
-            icon: Icon(Icons.camera_alt,
-            color: Colors.black54,
-            size: 35
-            ),
-            onPressed: () {
-              takePhoto(ImageSource.camera);
-            },
-            label: Text("Camera",
-              style: TextStyle(
-                  fontSize: 17,
-                  fontFamily: 'inter',
-                  color: Colors.black54),),
-          ),
-          TextButton.icon(
-            icon: Icon(Icons.image,
-            color: Colors.black54,
-            size: 35),
-            onPressed: () {
-              takePhoto(ImageSource.gallery);
-            },
-            label: Text("Gallery",
-              style: TextStyle(
-                  fontSize: 17,
-                  fontFamily: 'inter',
-                  color: Colors.black54),
+              TextButton.icon(
+                icon: Icon(Icons.camera_alt,
+                    color: Colors.black54,
+                    size: 35
+                ),
+                onPressed: () {
+                  takePhoto(ImageSource.camera);
+                },
+                label: Text("Camera",
+                  style: TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'inter',
+                      color: Colors.black54),),
+              ),
+              TextButton.icon(
+                icon: Icon(Icons.image,
+                    color: Colors.black54,
+                    size: 35),
+                onPressed: () {
+                  takePhoto(ImageSource.gallery);
+                },
+                label: Text("Gallery",
+                  style: TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'inter',
+                      color: Colors.black54),
 
-            ),
-          ),
-        ]
+                ),
+              ),
+            ]
         )
       ],
     ),

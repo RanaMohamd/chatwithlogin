@@ -25,7 +25,7 @@ class infoScreen extends StatelessWidget {
                         fontFamily: 'inter')),
               ),
               Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: infodata(),
               ),
               test_button(), //will be removed
