@@ -11,6 +11,14 @@ import 'package:petshelt/splash_screen.dart';
 import 'info_shelters_screens/shelters_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:petshelt/ChatScreen.dart';
+import 'package:petshelt/routes/DidYouKnow.dart';
+import 'package:petshelt/routes/bird.dart';
+import 'package:petshelt/routes/cat.dart';
+import 'package:petshelt/routes/dog.dart';
+import 'package:petshelt/routes/fish.dart';
+import 'package:petshelt/routes/hamster.dart';
+import 'package:petshelt/routes/turtle.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,9 +49,14 @@ class MyApp extends StatelessWidget {
         sheltersScreen.routeName: (buildContext) => sheltersScreen(),
         mapScreen.routeName: (buildContext) => mapScreen(),
         homeScreen.routeName: (buildContext) => homeScreen(),
-        DetectBreed.routeName: (buildContext) => DetectBreed()
-
-
+        DetectBreed.routeName: (buildContext) => DetectBreed(),
+        Bird.routeName:(buildContext)=>Bird(),
+        Fish.routeName:(buildContext)=>Fish(),
+        Hamster.routeName:(buileContext)=>Hamster(),
+        Turtle.routeName:(buildContext)=>Turtle(),
+        Dog.routeName:(buildContext)=>Dog(),
+        Cat.routeName:(buildContext)=>Cat(),
+        DidYouKnow.routeName:(buildContext)=>DidYouKnow(),
       },
       initialRoute: splashScreen.routeName,
     );

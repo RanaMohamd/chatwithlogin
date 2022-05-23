@@ -7,6 +7,7 @@ import 'package:petshelt/ChatScreen.dart';
 import 'package:petshelt/HomeScreen.dart';
 import 'package:petshelt/data/firestore_utlis.dart';
 import 'package:petshelt/provider/authenticationProvider.dart';
+import 'package:petshelt/routes/DidYouKnow.dart';
 import 'package:petshelt/signup_screen/signupScreen.dart';
 import 'package:provider/provider.dart';
 import '../signup_screen/utils_format.dart';
@@ -195,7 +196,7 @@ class _loginScreenState extends State<loginScreen> {
         var fireStoreUser = await getUserById(result.user!.uid);
         if (fireStoreUser != null) {
           provider.updateUser(fireStoreUser);
-          Navigator.pushReplacementNamed(context, homeScreen.routeName);
+          Navigator.pushReplacementNamed(context, DidYouKnow.routeName);
         }
       }
     } catch (error) {
