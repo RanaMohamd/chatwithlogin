@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:petshelt/breedScreen/Breed_Screen.dart';
 import 'package:petshelt/info_shelters_screens/shelters_ui.dart';
 import 'package:petshelt/map/mapScreen.dart';
+
+import 'ChatScreen.dart';
+import 'breedScreen/DetectBreed.dart';
 
 class homeScreen extends StatelessWidget {
   const homeScreen({Key? key}) : super(key: key);
@@ -41,11 +43,18 @@ class homeScreen extends StatelessWidget {
                   icon: Image.asset('images/breeds.png'),
                   color: Colors.white,
                   onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: ((builder) => bottomSheet()));
+                    Navigator.pushNamed(context, DetectBreed.routeName);
+                  },
+                ),
+                IconButton(
+                  iconSize: 57,
+                  icon: const Icon(Icons.chat),
+                  color: const Color(0xFF6EC9B1),
+                  onPressed: () {
+                    Navigator.pushNamed(context,ChatScreen.routeName );
                   },
                 )
+
               ],
             )
           ],

@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:petshelt/HomeScreen.dart';
 import 'package:petshelt/Map/mapScreen.dart';
-import 'package:petshelt/breedScreen/Breed_Screen.dart';
 import 'package:petshelt/breedScreen/DetectBreed.dart';
 import 'package:petshelt/info_shelters_screens/info_ui.dart';
 import 'package:petshelt/login_screen/loginScreen.dart';
@@ -41,9 +40,8 @@ class MyApp extends StatelessWidget {
         infoScreen.routeName: (buildContext) => infoScreen(),
         sheltersScreen.routeName: (buildContext) => sheltersScreen(),
         mapScreen.routeName: (buildContext) => mapScreen(),
-        breedsScreen.routeName: (buildContext) => breedsScreen(),
         homeScreen.routeName: (buildContext) => homeScreen(),
-        DetectBreed.routeName: (buildContext) => DetectBreed(),
+        DetectBreed.routeName: (buildContext) => DetectBreed()
 
 
       },

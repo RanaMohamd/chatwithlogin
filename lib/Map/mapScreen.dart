@@ -18,6 +18,7 @@ class _mapScreenState extends State<mapScreen> {
     Provider.of<locationProvider>(context, listen: false).initalization();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
